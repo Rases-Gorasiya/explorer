@@ -76,8 +76,10 @@ export default function Layout({ children }) {
       </motion.nav>
 
       {/* Main Content */}
-      <main className="relative z-10 pt-16">
-        {children}
+      <main className="relative z-10 pt-16 flex flex-col items-center w-full">
+        <div className="w-full max-w-7xl">
+          {children}
+        </div>
       </main>
 
       {/* Footer */}

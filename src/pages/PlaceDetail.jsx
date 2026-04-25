@@ -39,6 +39,10 @@ export default function PlaceDetail() {
     { label: 'Established', value: landmark.establishmentYear > 0 ? landmark.establishmentYear : 'Ancient', icon: '🏛' },
   ];
 
+  const getFallbackUrl = () => {
+    return `https://loremflickr.com/1200/800/india,${landmark.name.replace(/\s+/g, '')}`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -70,14 +74,14 @@ export default function PlaceDetail() {
           <div className="relative h-64 md:h-96 overflow-hidden">
             {/* Image */}
             <motion.img
-              src={landmark.imageUrl || `https://images.unsplash.com/photo-1548013146-72479768bbaa?q=80&w=1200&auto=format&fit=crop`}
+              src={landmark.imageUrl || getFallbackUrl()}
               alt={landmark.name}
               className="absolute inset-0 w-full h-full object-cover"
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.2 }}
               onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1548013146-72479768bbaa';
+                e.target.src = getFallbackUrl();
               }}
             />
             {/* Overlays */}

@@ -85,7 +85,7 @@ export default function OptimizerPage() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen max-w-7xl mx-auto px-6 py-12"
+      className="min-h-screen px-4 sm:px-6 py-12"
     >
       {/* Header */}
       <motion.div

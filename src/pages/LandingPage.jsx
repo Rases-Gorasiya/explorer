@@ -38,7 +38,7 @@ export default function LandingPage() {
       <Hero searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       {/* Explorer Grid Section */}
-      <section id="explorer-grid" className="max-w-7xl mx-auto px-6 py-12">
+      <section id="explorer-grid" className="w-full px-4 sm:px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -64,48 +64,50 @@ export default function LandingPage() {
           resultCount={filteredData.length}
         />
 
-        {/* Grid */}
-        {filteredData.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {visibleData.map((landmark, index) => (
-                <LandmarkCard key={landmark.id} landmark={landmark} index={index % PAGE_SIZE} />
-              ))}
-            </div>
-
-            {/* Load More */}
-            {hasMore && (
-              <div className="flex justify-center mt-10">
-                <motion.button
-                  id="load-more"
-                  className="glass-button px-8 py-3 text-sm font-medium flex items-center gap-2"
-                  onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Show More
-                  <span className="text-[var(--color-text-muted)]">
-                    ({filteredData.length - visibleCount} remaining)
-                  </span>
-                </motion.button>
+        {/* Grid Container */}
+        <div className="w-full flex flex-col items-center">
+          {filteredData.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12 w-full justify-items-center mb-12">
+                {visibleData.map((landmark, index) => (
+                  <LandmarkCard key={landmark.id} landmark={landmark} index={index % PAGE_SIZE} />
+                ))}
               </div>
-            )}
-          </>
-        ) : (
-          <motion.div
-            className="glass p-12 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <span className="text-4xl mb-4 block">🔍</span>
-            <h3 className="text-lg font-[Outfit] font-semibold text-[var(--color-text-primary)] mb-2">
-              No landmarks found
-            </h3>
-            <p className="text-sm text-[var(--color-text-muted)]">
-              Try adjusting your search or filters
-            </p>
-          </motion.div>
-        )}
+
+              {/* Load More */}
+              {hasMore && (
+                <div className="flex justify-center mt-4">
+                  <motion.button
+                    id="load-more"
+                    className="glass-button px-10 py-4 text-sm font-bold flex items-center gap-3 shadow-lg"
+                    onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                    whileHover={{ scale: 1.05, boxShadow: 'var(--shadow-glow-cyan)' }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    🚀 Load More Wonders
+                    <span className="opacity-50 font-normal">
+                      ({filteredData.length - visibleCount} left)
+                    </span>
+                  </motion.button>
+                </div>
+              )}
+            </>
+          ) : (
+            <motion.div
+              className="glass p-12 text-center w-full max-w-2xl mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <span className="text-44xl mb-4 block">📡</span>
+              <h3 className="text-xl font-[Outfit] font-bold text-[var(--color-text-primary)] mb-2">
+                No signal in this quadrant
+              </h3>
+              <p className="text-sm text-[var(--color-text-secondary)]">
+                Try scanning for a different frequency or destination.
+              </p>
+            </motion.div>
+          )}
+        </div>
       </section>
       {/* Scroll indicator & Back to top */}
       <ScrollToTop />

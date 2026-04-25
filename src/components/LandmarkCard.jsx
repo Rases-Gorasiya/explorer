@@ -8,8 +8,8 @@ export default function LandmarkCard({ landmark, index }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [12, -12]), { stiffness: 200, damping: 20 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-12, 12]), { stiffness: 200, damping: 20 });
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 25 });
 
   function handleMouseMove(e) {
     if (!ref.current) return;
@@ -33,6 +33,11 @@ export default function LandmarkCard({ landmark, index }) {
 
   const zone = zoneColors[landmark.zone] || { color: '#00f2ff', rgb: '0, 242, 255' };
 
+  // Generate fallback URL based on name or type
+  const getFallbackUrl = () => {
+    return `https://loremflickr.com/800/600/india,${landmark.name.replace(/\s+/g, '')}`;
+  };
+
   // Generate a gradient based on landmark type
   const typeGradients = {
     Monument: 'linear-gradient(135deg, #0c1220 0%, #1a2a4a 50%, #0d1a30 100%)',
@@ -49,23 +54,9 @@ export default function LandmarkCard({ landmark, index }) {
 
   const gradient = typeGradients[landmark.type] || typeGradients.default;
 
-  const renderStars = (rating) => {
-    const full = Math.floor(rating);
-    const hasHalf = rating % 1 >= 0.3;
-    return (
-      <div className="flex gap-0.5 text-xs">
-        {Array.from({ length: 5 }, (_, i) => (
-          <span key={i} className={i < full ? 'star-filled' : i === full && hasHalf ? 'star-filled opacity-50' : 'star-empty'}>
-            ★
-          </span>
-        ))}
-      </div>
-    );
-  };
-
   return (
     <motion.div
-      className="perspective-container"
+      className="perspective-container p-2"
       initial={{ opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-50px" }}
@@ -79,31 +70,24 @@ export default function LandmarkCard({ landmark, index }) {
       <Link to={`/place/${landmark.id}`}>
         <motion.div
           ref={ref}
-          className="glass-card relative overflow-hidden cursor-pointer group card-3d"
-          style={{ rotateX, rotateY, transformPerspective: 1000 }}
+          className="glass-card relative overflow-hidden cursor-pointer group card-3d max-w-[320px]"
+          style={{ rotateX, rotateY, transformPerspective: 1200 }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           whileTap={{ scale: 0.98 }}
         >
           {/* Card Image Area */}
-          <div className="relative h-48 overflow-hidden rounded-t-[20px]" style={{ background: gradient }}>
+          <div className="relative h-52 overflow-hidden rounded-t-[20px]" style={{ background: gradient }}>
             {/* Real Image */}
             <motion.img
-              src={landmark.imageUrl || `https://images.unsplash.com/photo-1548013146-72479768bbaa?q=80&w=800&auto=format&fit=crop`} // Default fallback to Taj Mahal or similar
+              src={landmark.imageUrl || getFallbackUrl()}
               alt={landmark.name}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               initial={{ opacity: 0 }}
               onLoad={(e) => e.target.style.opacity = 1}
               loading="lazy"
               onError={(e) => {
-                // Better fallback based on type if image fails
-                const fallbackUrls = {
-                  Temple: 'https://images.unsplash.com/photo-1614082242765-7c98ca0f3df3',
-                  Fort: 'https://images.unsplash.com/photo-1590050752117-23a9d7f28a31',
-                  Palace: 'https://images.unsplash.com/photo-1599661046289-e318978b6fc7',
-                  'Hill Station': 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da',
-                };
-                e.target.src = fallbackUrls[landmark.type] || 'https://images.unsplash.com/photo-1548013146-72479768bbaa';
+                e.target.src = getFallbackUrl();
               }}
             />
             
