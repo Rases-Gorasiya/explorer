@@ -5,10 +5,13 @@ Explorer is a high-performance travel analysis platform for 325 Indian landmarks
 ## 🚀 Key Features
 
 - **Antigravity Visual Identity**: Deep Space background with vibrant Cyber Cyan and Ethereal Gold accents, multi-layered translucent surfaces, and soft floating animations.
+- **Dynamic Imagery**: Integrated photos for 325+ landmarks with high-performance fallbacks and lazy-loading.
+- **Interactive Light Effects**: Mouse-tracking spotlight effects on the Hero search and Landmark cards.
 - **Interactive Explorer Grid**: 325 Indian landmarks displayed in 3D tilt cards with staggered entrance animations.
 - **Advanced Filtering**: Filter by Zone, Type, Significance, DSLR allowance, and minimum Rating.
 - **Analytics Dashboard**: 14+ interactive charts (Recharts) visualizing rating distributions, fee vs. rating correlations, tourist density, and more.
 - **Travel Optimizer**: A greedy algorithm-based tool to plan the optimal route within your budget and time constraints.
+- **Scroll Progress & Feedback**: Real-time scroll progress bar and 'Back to Top' functionality for enhanced UX.
 - **Power BI Integration**: Includes a design guide and theme to replicate the aesthetic in Power BI dashboards.
 
 ## 🛠 Tech Stack
