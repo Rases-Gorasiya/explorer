@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useScroll } from 'framer-motion';
 import { useMemo } from 'react';
 import StarField from './StarField';
 
@@ -23,6 +23,11 @@ export default function Layout({ children }) {
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
       >
+        {/* Scroll Progress Bar */}
+        <motion.div 
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--color-cyber-cyan)] shadow-[0_0_10px_var(--color-cyber-cyan)]"
+          style={{ scaleX: useScroll().scrollYProgress, transformOrigin: '0%' }}
+        />
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <motion.div

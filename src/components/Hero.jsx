@@ -104,16 +104,31 @@ export default function Hero({ searchQuery, onSearchChange }) {
         </motion.p>
 
         {/* Search Bar */}
-        <motion.div variants={itemVariants} className="relative max-w-xl mx-auto mb-12">
-          <div className="glass-strong flex items-center px-5 py-3 rounded-2xl shadow-[var(--shadow-float)]">
-            <svg className="w-5 h-5 text-[var(--color-cyber-cyan)] mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <motion.div 
+          variants={itemVariants} 
+          className="relative max-w-xl mx-auto mb-12"
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            e.currentTarget.style.setProperty('--mouse-x', `${x}%`);
+            e.currentTarget.style.setProperty('--mouse-y', `${y}%`);
+          }}
+        >
+          <div 
+            className="glass-strong flex items-center px-5 py-3 rounded-2xl shadow-[var(--shadow-float)] transition-all hover:scale-[1.02] border border-[rgba(255,255,255,0.1)] hover:border-[rgba(0,242,255,0.4)] group"
+            style={{ 
+              background: `radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 242, 255, 0.08) 0%, transparent 100%), rgba(255, 255, 255, 0.03)`, 
+            }}
+          >
+            <svg className="w-5 h-5 text-[var(--color-cyber-cyan)] mr-3 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
               id="hero-search"
               type="text"
               placeholder="Search landmarks, cities, states..."
-              className="w-full bg-transparent text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none text-base"
+              className="w-full bg-transparent text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none text-base font-medium"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
             />
@@ -121,6 +136,7 @@ export default function Hero({ searchQuery, onSearchChange }) {
               <button
                 onClick={() => onSearchChange('')}
                 className="ml-2 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+                title="Clear Search"
               >
                 ✕
               </button>

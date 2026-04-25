@@ -18,6 +18,12 @@ export default function LandmarkCard({ landmark, index }) {
     const py = (e.clientY - rect.top) / rect.height - 0.5;
     x.set(px);
     y.set(py);
+
+    // Set mouse position variables for glow effect
+    const mx = ((e.clientX - rect.left) / rect.width) * 100;
+    const my = ((e.clientY - rect.top) / rect.height) * 100;
+    ref.current.style.setProperty('--mouse-x', `${mx}%`);
+    ref.current.style.setProperty('--mouse-y', `${my}%`);
   }
 
   function handleMouseLeave() {
@@ -61,32 +67,52 @@ export default function LandmarkCard({ landmark, index }) {
     <motion.div
       className="perspective-container"
       initial={{ opacity: 0, y: 40, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{
         type: 'spring',
         stiffness: 100,
         damping: 12,
-        delay: index * 0.06,
+        delay: index * 0.04,
       }}
     >
       <Link to={`/place/${landmark.id}`}>
         <motion.div
           ref={ref}
-          className="card-3d glass relative overflow-hidden cursor-pointer group"
+          className="glass-card relative overflow-hidden cursor-pointer group card-3d"
           style={{ rotateX, rotateY, transformPerspective: 1000 }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          whileHover={{
-            boxShadow: `0 16px 64px rgba(0,0,0,0.5), 0 0 30px rgba(${zone.rgb}, 0.15)`,
-            borderColor: `rgba(${zone.rgb}, 0.3)`,
-          }}
-          transition={{ duration: 0.3 }}
+          whileTap={{ scale: 0.98 }}
         >
           {/* Card Image Area */}
-          <div className="relative h-44 overflow-hidden rounded-t-[15px]" style={{ background: gradient }}>
-            {/* Type icon overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-6xl opacity-10 select-none">
+          <div className="relative h-48 overflow-hidden rounded-t-[20px]" style={{ background: gradient }}>
+            {/* Real Image */}
+            <motion.img
+              src={landmark.imageUrl || `https://images.unsplash.com/photo-1548013146-72479768bbaa?q=80&w=800&auto=format&fit=crop`} // Default fallback to Taj Mahal or similar
+              alt={landmark.name}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              initial={{ opacity: 0 }}
+              onLoad={(e) => e.target.style.opacity = 1}
+              loading="lazy"
+              onError={(e) => {
+                // Better fallback based on type if image fails
+                const fallbackUrls = {
+                  Temple: 'https://images.unsplash.com/photo-1614082242765-7c98ca0f3df3',
+                  Fort: 'https://images.unsplash.com/photo-1590050752117-23a9d7f28a31',
+                  Palace: 'https://images.unsplash.com/photo-1599661046289-e318978b6fc7',
+                  'Hill Station': 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da',
+                };
+                e.target.src = fallbackUrls[landmark.type] || 'https://images.unsplash.com/photo-1548013146-72479768bbaa';
+              }}
+            />
+            
+            {/* Shimmer overlay (only visible while loading or as subtle texture) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            
+            {/* Type icon overlay (shown on top of image with low opacity) */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:opacity-10 transition-opacity duration-500">
+              <span className="text-7xl select-none">
                 {landmark.type === 'Temple' ? '🕉' :
                  landmark.type === 'Fort' ? '🏰' :
                  landmark.type === 'Palace' ? '🏛' :
@@ -102,86 +128,76 @@ export default function LandmarkCard({ landmark, index }) {
             </div>
 
             {/* Zone badge */}
-            <div className="absolute top-3 left-3">
-              <span
-                className="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase"
+            <div className="absolute top-4 left-4 z-10">
+              <motion.span
+                className="px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase backdrop-blur-md"
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: Math.random() * 2 }}
                 style={{
-                  background: `rgba(${zone.rgb}, 0.15)`,
-                  border: `1px solid rgba(${zone.rgb}, 0.3)`,
-                  color: zone.color,
+                  background: `rgba(${zone.rgb}, 0.25)`,
+                  border: `1px solid rgba(${zone.rgb}, 0.5)`,
+                  color: '#fff',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                  boxShadow: `0 4px 12px rgba(0,0,0,0.3)`,
                 }}
               >
                 {landmark.zone}
-              </span>
+              </motion.span>
             </div>
 
             {/* Rating badge */}
-            <div className="absolute top-3 right-3">
-              <span className="px-2 py-1 rounded-lg text-xs font-bold bg-[rgba(0,0,0,0.4)] backdrop-blur-sm text-[var(--color-ethereal-gold)] flex items-center gap-1">
+            <div className="absolute top-4 right-4 z-10">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[rgba(10,15,30,0.7)] backdrop-blur-md text-[var(--color-ethereal-gold)] flex items-center gap-1 border border-[rgba(255,255,255,0.2)] shadow-lg">
                 ★ {landmark.googleRating}
               </span>
             </div>
 
             {/* Bottom gradient overlay */}
-            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[var(--color-deep-space)] to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[rgba(5,10,20,1)] via-[rgba(5,10,20,0.4)] to-transparent z-0" />
           </div>
 
           {/* Card Content */}
-          <div className="p-4 relative">
+          <div className="p-5 relative">
             {/* Name */}
-            <h3 className="text-base font-[Outfit] font-semibold text-[var(--color-text-primary)] mb-1 group-hover:text-[var(--color-cyber-cyan)] transition-colors leading-tight line-clamp-1">
+            <h3 className="text-lg font-[Outfit] font-bold text-[var(--color-text-primary)] mb-1 group-hover:text-[var(--color-cyber-cyan)] transition-colors leading-tight line-clamp-1">
               {landmark.name}
             </h3>
 
             {/* Location */}
-            <p className="text-xs text-[var(--color-text-muted)] mb-3 flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+            <p className="text-xs text-[var(--color-text-secondary)] mb-4 flex items-center gap-1.5 font-medium">
+              <span className="text-[var(--color-cyber-cyan)] opacity-70">📍</span>
               {landmark.city}, {landmark.state}
             </p>
 
-            {/* Stars */}
-            <div className="mb-3">{renderStars(landmark.googleRating)}</div>
-
-            {/* Meta info */}
-            <div className="flex items-center gap-3 text-[11px] text-[var(--color-text-secondary)]">
-              <span className="flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 text-[var(--color-cyber-cyan)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {landmark.timeNeeded}h
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="text-[var(--color-ethereal-gold)]">₹</span>
-                {landmark.entranceFee === 0 ? 'Free' : landmark.entranceFee}
-              </span>
-              <span className="flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                {landmark.reviewsInLakhs}L
-              </span>
-            </div>
-
-            {/* Significance tag */}
-            <div className="mt-3 flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[rgba(255,255,255,0.05)] text-[var(--color-text-secondary)] border border-[rgba(255,255,255,0.06)]">
-                {landmark.significance}
-              </span>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[rgba(255,255,255,0.05)] text-[var(--color-text-secondary)] border border-[rgba(255,255,255,0.06)]">
-                {landmark.type}
-              </span>
+            {/* Meta info row */}
+            <div className="flex items-center justify-between mt-auto pt-2 border-t border-[rgba(255,255,255,0.06)]">
+              <div className="flex gap-4">
+                <span className="flex flex-col">
+                  <span className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-tighter">Time</span>
+                  <span className="text-xs font-semibold text-[var(--color-text-primary)]">{landmark.timeNeeded}h</span>
+                </span>
+                <span className="flex flex-col">
+                  <span className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-tighter">Fee</span>
+                  <span className="text-xs font-semibold text-[var(--color-ethereal-gold)]">
+                    {landmark.entranceFee === 0 ? 'Free' : `₹${landmark.entranceFee}`}
+                  </span>
+                </span>
+              </div>
+              
+              <div className="flex -space-x-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                 {/* Mini type icons */}
+                 <span className="w-5 h-5 rounded-full glass border border-[rgba(255,255,255,0.1)] flex items-center justify-center text-[10px]">
+                    {landmark.dslrAllowed ? '📷' : '🚫'}
+                 </span>
+              </div>
             </div>
           </div>
 
           {/* Hover glow effect */}
           <motion.div
-            className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
             style={{
-              background: `radial-gradient(circle at 50% 0%, rgba(${zone.rgb}, 0.08) 0%, transparent 60%)`,
+              background: `radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(${zone.rgb}, 0.1) 0%, transparent 80%)`,
             }}
           />
         </motion.div>

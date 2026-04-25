@@ -66,58 +66,70 @@ export default function PlaceDetail() {
           layoutId={`card-${landmark.id}`}
           transition={{ type: 'spring', stiffness: 200, damping: 25 }}
         >
-          {/* Header gradient */}
-          <div
-            className="relative h-56 md:h-72 flex items-end p-8"
-            style={{
-              background: `linear-gradient(135deg, rgba(${zone.rgb}, 0.15) 0%, var(--color-deep-space) 100%)`,
-            }}
-          >
-            <div className="absolute inset-0 flex items-center justify-center opacity-10">
-              <span className="text-[120px] select-none">
-                {landmark.type === 'Temple' ? '🕉' :
-                 landmark.type === 'Fort' ? '🏰' :
-                 landmark.type === 'Palace' ? '🏛' :
-                 landmark.type === 'Monument' ? '🗿' :
-                 landmark.type === 'Beach' ? '🌊' :
-                 landmark.type === 'Hill Station' ? '⛰' : '◈'}
-              </span>
-            </div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-3">
-                <span
-                  className="px-3 py-1 rounded-lg text-xs font-bold tracking-wider uppercase"
-                  style={{
-                    background: `rgba(${zone.rgb}, 0.15)`,
-                    border: `1px solid rgba(${zone.rgb}, 0.3)`,
-                    color: zone.color,
-                  }}
+          {/* Header section with Image */}
+          <div className="relative h-64 md:h-96 overflow-hidden">
+            {/* Image */}
+            <motion.img
+              src={landmark.imageUrl || `https://images.unsplash.com/photo-1548013146-72479768bbaa?q=80&w=1200&auto=format&fit=crop`}
+              alt={landmark.name}
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={{ scale: 1.1, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.2 }}
+              onError={(e) => {
+                e.target.src = 'https://images.unsplash.com/photo-1548013146-72479768bbaa';
+              }}
+            />
+            {/* Overlays */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(to top, var(--color-deep-space) 0%, transparent 60%), linear-gradient(to right, rgba(10,15,30,0.8) 0%, transparent 100%)`,
+              }}
+            />
+            
+            <div className="absolute inset-0 flex items-end p-8 md:p-12">
+              <div className="relative z-10 w-full">
+                <motion.div 
+                  className="flex flex-wrap items-center gap-3 mb-4"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
                 >
-                  {landmark.zone} Zone
-                </span>
-                <span className="px-3 py-1 rounded-lg text-xs font-medium bg-[rgba(255,255,255,0.06)] text-[var(--color-text-secondary)]">
-                  {landmark.type}
-                </span>
-                <span className="px-3 py-1 rounded-lg text-xs font-medium bg-[rgba(255,255,255,0.06)] text-[var(--color-text-secondary)]">
-                  {landmark.significance}
-                </span>
+                  <span
+                    className="px-3 py-1 rounded-lg text-xs font-bold tracking-wider uppercase backdrop-blur-md"
+                    style={{
+                      background: `rgba(${zone.rgb}, 0.25)`,
+                      border: `1px solid rgba(${zone.rgb}, 0.5)`,
+                      color: '#fff',
+                    }}
+                  >
+                    {landmark.zone} Zone
+                  </span>
+                  <span className="px-3 py-1 rounded-lg text-xs font-bold bg-[rgba(0,242,255,0.15)] text-[var(--color-cyber-cyan)] border border-[rgba(0,242,255,0.3)] backdrop-blur-md">
+                    {landmark.type}
+                  </span>
+                </motion.div>
+                
+                <motion.h1
+                  className="text-4xl md:text-6xl font-[Outfit] font-bold text-[var(--color-text-primary)] mb-3 leading-tight"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {landmark.name}
+                </motion.h1>
+                
+                <motion.p
+                  className="text-lg text-[var(--color-text-secondary)] flex items-center gap-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <span className="text-[var(--color-cyber-cyan)] text-2xl">📍</span>
+                  {landmark.city}, {landmark.state}
+                </motion.p>
               </div>
-              <motion.h1
-                className="text-3xl md:text-5xl font-[Outfit] font-bold text-[var(--color-text-primary)]"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {landmark.name}
-              </motion.h1>
-              <motion.p
-                className="text-base text-[var(--color-text-secondary)] mt-2 flex items-center gap-1"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                📍 {landmark.city}, {landmark.state}
-              </motion.p>
             </div>
           </div>
 

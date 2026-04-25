@@ -107,6 +107,29 @@ export default function LandingPage() {
           </motion.div>
         )}
       </section>
+      {/* Scroll indicator & Back to top */}
+      <ScrollToTop />
     </motion.div>
+  );
+}
+
+function ScrollToTop() {
+  const [show, setShow] = useState(false);
+  useState(() => {
+    const handle = () => setShow(window.scrollY > 400);
+    window.addEventListener('scroll', handle);
+    return () => window.removeEventListener('scroll', handle);
+  }, []);
+
+  return (
+    <motion.button
+      className="fixed bottom-8 right-8 w-12 h-12 glass rounded-full flex items-center justify-center z-50 text-[var(--color-cyber-cyan)]"
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: show ? 1 : 0, scale: show ? 1 : 0 }}
+      whileHover={{ scale: 1.1, boxShadow: 'var(--shadow-glow-cyan)' }}
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+    >
+      ↑
+    </motion.button>
   );
 }

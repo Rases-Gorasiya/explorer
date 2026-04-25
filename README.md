@@ -47,4 +47,4 @@ Explorer is a high-performance travel analysis platform for 325 Indian landmarks
 Find the implementation guide and theme JSON in the `docs/` folder to recreate the "Antigravity" look in your analytics reports.
 
 ---
-Created with ❤️ by Antigravity AI
+Created with ❤️ by RASES GORASIYA
