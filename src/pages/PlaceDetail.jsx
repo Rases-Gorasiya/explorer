@@ -74,14 +74,14 @@ export default function PlaceDetail() {
           <div className="relative h-64 md:h-96 overflow-hidden">
             {/* Image */}
             <motion.img
-              src={landmark.imageUrl || getFallbackUrl()}
+              src={landmark.imageUrl}
               alt={landmark.name}
               className="absolute inset-0 w-full h-full object-cover"
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.2 }}
               onError={(e) => {
-                e.target.src = getFallbackUrl();
+                e.target.src = `https://placehold.co/1200x800/0a0f1e/00f2ff?text=${encodeURIComponent(landmark.name)}+Pending+Upload`;
               }}
             />
             {/* Overlays */}

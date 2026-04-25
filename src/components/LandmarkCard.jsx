@@ -1,10 +1,20 @@
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { useState } from 'react';
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { zoneColors } from '../data/filters';
 
 export default function LandmarkCard({ landmark, index }) {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const ref = useRef(null);
+
+  // Handle image error to show a descriptive placeholder for local images
+  const handleImageError = (e) => {
+    if (e.target.src.includes('/images/landmarks/')) {
+      // It's a local path that failed - likely not uploaded yet
+      setIsImageLoaded(true); // Stop loading spinner
+    }
+  };
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -56,42 +66,48 @@ export default function LandmarkCard({ landmark, index }) {
 
   return (
     <motion.div
-      className="perspective-container p-2"
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{
-        type: 'spring',
-        stiffness: 100,
-        damping: 12,
-        delay: index * 0.04,
-      }}
+      className="perspective-container h-full p-2"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.04 }}
     >
-      <Link to={`/place/${landmark.id}`}>
+      <Link to={`/place/${landmark.id}`} className="block h-full">
         <motion.div
           ref={ref}
-          className="glass-card relative overflow-hidden cursor-pointer group card-3d max-w-[320px]"
+          className="card-3d glass flex flex-col h-full overflow-hidden group border border-[rgba(255,255,255,0.06)] hover:border-[rgba(0,242,255,0.3)] transition-colors duration-500 max-w-[320px]"
           style={{ rotateX, rotateY, transformPerspective: 1200 }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          whileHover={{ y: -8, boxShadow: 'var(--shadow-float-lg)' }}
           whileTap={{ scale: 0.98 }}
         >
-          {/* Card Image Area */}
-          <div className="relative h-52 overflow-hidden rounded-t-[20px]" style={{ background: gradient }}>
-            {/* Real Image */}
-            <motion.img
-              src={landmark.imageUrl || getFallbackUrl()}
+          {/* Image Section */}
+          <div className="relative h-48 overflow-hidden bg-[rgba(255,255,255,0.02)]" style={{ background: gradient }}>
+            <AnimatePresence>
+              {!isImageLoaded && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center bg-[var(--color-space-mid)] z-10"
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="w-8 h-8 border-2 border-[var(--color-cyber-cyan)] border-t-transparent rounded-full animate-spin" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <img
+              src={landmark.imageUrl}
               alt={landmark.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              initial={{ opacity: 0 }}
-              onLoad={(e) => e.target.style.opacity = 1}
-              loading="lazy"
+              className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${
+                isImageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={() => setIsImageLoaded(true)}
               onError={(e) => {
-                e.target.src = getFallbackUrl();
+                handleImageError(e);
+                e.target.src = `https://placehold.co/800x600/0a0f1e/00f2ff?text=${encodeURIComponent(landmark.name)}+Pending+Upload`;
               }}
             />
             
-            {/* Shimmer overlay (only visible while loading or as subtle texture) */}
+            {/* Shimmer overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             
             {/* Type icon overlay (shown on top of image with low opacity) */}
